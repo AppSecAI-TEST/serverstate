@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rd.serverstate</groupId>
 	<artifactId>rd.serverstate.parent</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>serverstate</name>
 	<description>Parent project for ServerState</description>
 	<packaging>pom</packaging>

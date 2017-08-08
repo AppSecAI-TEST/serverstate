@@ -68,9 +68,8 @@ public interface DistributedSession {
  * <p>
  *
  * @param	name the key that is being removed alongwith associated value.
- * @return	the value that is associated with the key in the session at the time
- * 			of removal. This will be <tt>null</tt> if the key does not exist in
- * 			the session at the time of removal.
+ * @return	the value that is associated with the key in the session at the time of removal. This
+ * 			will be <tt>null</tt> if the key does not exist in the session at the time of removal.
  */
 
 	Object removeAttribute(String name);

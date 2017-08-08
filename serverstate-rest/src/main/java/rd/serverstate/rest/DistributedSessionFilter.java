@@ -65,32 +65,31 @@ public abstract class DistributedSessionFilter implements Filter {
 	// Methods of interface Filter
 
 /**
- * Initializes the distributed session filter. The default behavior cannot be
- * altered in a sub-type implementation. The following configuration can be
- * passed to the filter at the time of initialization:
+ * Initializes the distributed session filter. The default behavior cannot be altered in a sub-type
+ * implementation. The following configuration can be passed to the filter at the time of
+ * initialization:
  * <p>
  *
  * <dl>
  * <dt>cookie-name</dt>
  * <dd>the name of the cookie being sent to the browser. The default value is
- * DISTRIBUTED_SESSION_ID. You might want to alter this value in case of
- * conflicts with other cookies.</dd>
+ * DISTRIBUTED_SESSION_ID. You might want to alter this value in case of conflicts with other
+ * cookies.</dd>
  * <dt>domain-name</dt>
- * <dd>the domain name from where this cookie is supposed to originate. The
- * cookie will be sent back to the server only for requests that originate from
- * the given domain. The default value is localhost which should suffice for
- * development and testing. You must set this value correctly for production
- * systems.</dd>
+ * <dd>the domain name from where this cookie is supposed to originate. The cookie will be sent back
+ * to the server only for requests that originate from the given domain. The default value is
+ * localhost which should suffice for development and testing. You must set this value correctly for
+ * production systems.</dd>
  * <dt>cookie-path</dt>
- * <dd>The paths in the request URL for a given domain for which the cookie will
- * be sent back to the server. The default value is "/" which essentially covers
- * all request paths for a given domain.</dd>
+ * <dd>The paths in the request URL for a given domain for which the cookie will be sent back to the
+ * server. The default value is "/" which essentially covers all request paths for a given
+ * domain.</dd>
  * <dt>max-age</dt>
- * <dd>the maximum age of the cookie in seconds, after which it expires. The
- * default value is 2147483647 seconds (maximum integer value supported by the
- * Java platform). Note that when a cookie expires, there is no way to propagate
- * that event to the filter. Hence sub-types must have provision to remove the
- * session (with included data) after a corresponding duration of inactivity
+ * <dd>the maximum age of the cookie in seconds, after which it expires. The default value is
+ * 2147483647 seconds (maximum integer value supported by the Java platform). Note that when a
+ * cookie expires, there is no way to propagate that event to the filter. Hence sub-types must have
+ * provision to remove the session (with included data) after a corresponding duration of
+ * inactivity.
  * </dd>
  * </dl>
  */
@@ -185,34 +184,30 @@ public abstract class DistributedSessionFilter implements Filter {
 	}
 
 /**
- * Allows for custom initialization from within sub-types. This is called from
- * within the {@link #init(FilterConfig)} method after completion of basic
- * filter setup (e.g. setup of cookies, etc). This is a template method and must
- * be implemented in a sub-type.
+ * Allows for custom initialization from within sub-types. This is called from within the
+ * {@link #init(FilterConfig)} method after completion of basic filter setup (e.g. setup of cookies,
+ * etc). This is a template method and must be implemented in a sub-type.
  * <p>
  *
- * @param	config the filter configuration that is provided by the deployment
- * 			environment during initialization.
+ * @param	config the filter configuration that is provided by the deployment environment during
+ * 			initialization.
  * @throws	ServletException to indicate a generic error condition.
  */
 
 	protected abstract void postInit(FilterConfig config) throws ServletException;
 
 /**
- * Provides a concrete implementation of a distributed session for a given
- * session identifier. The same session data must always be associated with a
- * given session identifier within a distribution cluster. This is a template
- * method and must be implemented in a sub-type taking into account the
- * specifics of storage and propagation across all deployment nodes within the
- * cluster.
+ * Provides a concrete implementation of a distributed session for a given session identifier. The
+ * same session data must always be associated with a given session identifier within a distribution
+ * cluster. This is a template method and must be implemented in a sub-type taking into account the
+ * specifics of storage and propagation across all deployment nodes within the cluster.
  * <p>
  *
- * @param	sessionId the unique session identifier that is associated with a
- * 			HTTP request being made to the server.
+ * @param	sessionId the unique session identifier that is associated with a HTTP request being
+ * 			made to the server.
  * @param	create creates the session if the session does not exist.
- * @return	session data for the given session identifier. Must return
- * 			<tt>null</tt> if the session does not exist and the create flag is
- * 			<tt>false</tt>.
+ * @return	session data for the given session identifier. Must return <tt>null</tt> if the session
+ * 			does not exist and the create flag is <tt>false</tt>.
  */
 
 	protected abstract DistributedSession getSession(String sessionId, boolean create);

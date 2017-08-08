@@ -55,26 +55,35 @@ public class HazelP2PSessionFilter extends DistributedSessionFilter {
 	// Methods of base class DistributedSessionFilter
 
 /**
- * Contains initialization logic that is specific to Hazelcast. The following
- * configuration can be passed to the filter at the time of initialization:
+ * Contains initialization logic that is specific to Hazelcast. The following configuration can be
+ * passed to the filter at the time of initialization:
  * <p>
  *
  * <dl>
  * <dt>multicast-port</dt>
- * <dd>TCP port number that is used by Hazelcast for peer-to-peer communication.
- * Default value is 54327. You may choose to alter this value if the given port
- * is already taken or there are specific port ranges that are allowed to be
- * opened on the target machine.</dd>
+ * <dd>TCP port number that is used by Hazelcast for peer-to-peer communication. Default value is
+ * 54327. You may choose to alter this value if the given port is already taken or there are
+ * specific port ranges that are allowed to be opened on the target machine.</dd>
+ * <dt>multicast-group</dt>
+ * An additional identifier that is used at the network layer to form Hazelcast groups across
+ * multiple JVM nodes.
+ * <dd>
+ * </dd>
+ * <dt>partition</dt>
+ * <dd>A logical name that is used to group together all sessions for a given application cluster.
+ * This is to avoid collisions in case more than one application cluster is on the same Hazelcast
+ * group (defined by multicast port number and group). Leave out this value in order to use a global
+ * partition map for a Hazelcast group.
+ * </dd>
  * <dt>max-idle-seconds</dt>
- * <dd>Maximum number of seconds each session can stay in the hazelcast near
- * cache as untouched (not-read). Sessions that are not accessed for more than
- * this duration will get removed from the near cache. Any integer between 0 and
- * Integer.MAX_VALUE. 0 means Integer.MAX_VALUE. Default is 0.</dd>
+ * <dd>Maximum number of seconds each session can stay in the hazelcast near cache as untouched
+ * (not-read). Sessions that are not accessed for more than this duration will get removed from the
+ * near cache. Any integer between 0 and Integer.MAX_VALUE. 0 means Integer.MAX_VALUE. Default is 0.
+ * </dd>
  * <dt>ttl-seconds</dt>
- * <dd>Maximum number of seconds for each session to stay in the Hazelcast near
- * cache. Sessions that are older than this duration will get automatically
- * evicted from the near cache. Any integer between 0 and Integer.MAX_VALUE. 0
- * means infinite. Default is 0.</dd>
+ * <dd>Maximum number of seconds for each session to stay in the Hazelcast near cache. Sessions that
+ * are older than this duration will get automatically evicted from the near cache. Any integer
+ * between 0 and Integer.MAX_VALUE. 0 means infinite. Default is 0.</dd>
  *</dl>
  * This is in addition to the base configuration parameters can be passed to
  * {@link DistributedSessionFilter}.
@@ -91,12 +100,28 @@ public class HazelP2PSessionFilter extends DistributedSessionFilter {
 			multicastPort = 54327;
 		}
 
+		String multicastGrp = config.getInitParameter("multicast-group");
+
 		Config hzc = new Config().setInstanceName("distributed-http-session");
 		NetworkConfig nc = hzc.getNetworkConfig();
 		JoinConfig jc = nc.getJoin();
 		jc.getMulticastConfig().setEnabled(true).setMulticastPort(multicastPort);
+		if(multicastGrp != null) {
+			multicastGrp = multicastGrp.trim();
+			if(multicastGrp.length() > 0) {
+				jc.getMulticastConfig().setMulticastGroup(multicastGrp);
+			}
+		}
 
-		MapConfig mapConfig = hzc.getMapConfig(SESSION_MAP);
+		String mapName = SESSION_MAP;
+		String partition = config.getInitParameter("partition");
+		if(partition != null) {
+			partition = partition.trim();
+			if(partition.length() > 0) {
+				mapName += "-" + partition;
+			}
+		}
+		MapConfig mapConfig = hzc.getMapConfig(mapName);
 		mapConfig.setEvictionPolicy(EvictionPolicy.LRU);
 
 		NearCacheConfig nearConfig = new NearCacheConfig();
